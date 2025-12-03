@@ -6,10 +6,10 @@ export default async function handler(req, res) {
     const autorisation = req.headers["functionkey"];
     console.log(autorisation);
     if (autorisation !== process.env.FUNCTION_KEY) {
-      return responseHandler(
-        "Authentication Failed. Access to this resource requires valid credentials.",
-        401
-      );
+      return res.status(401).json({
+        error:
+          "Authentication Failed. Access to this resource requires valid credentials.",
+      });
     }
 
     // Read POST JSON body
