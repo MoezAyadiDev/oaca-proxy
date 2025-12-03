@@ -12,15 +12,21 @@ export default async function handler(req, res) {
         error: "Missing required fields: typeTrafic, airport, date",
       });
     }
+    if (!isDateValid(date)) {
+      return res.status(400).json({
+        error: "the date must be format YYYYMMDD",
+      });
+    }
+    const maDate = chaineToDate(date.toString());
     const queryParam = {
       frmmvtCod: typeTrafic === "Arrival" ? "A" : "D",
       frmaeropVil: "-1",
       frmnumVol: "",
       frmairport: airport,
       frmhour: 0,
-      frmday: date.getDate(),
-      frmmonth: date.getMonth() + 1,
-      frmacty: date.getFullYear(),
+      frmday: maDate.getDate(),
+      frmmonth: maDate.getMonth() + 1,
+      frmacty: maDate.getFullYear(),
     };
     const urlApi = encodeQuery(queryParam);
     const airportUrl = "https://www.oaca.nat.tn/vols/api/flight/filter";
@@ -56,4 +62,41 @@ function encodeQuery(data) {
   for (let d in data)
     ret.push(encodeURIComponent(d) + "=" + encodeURIComponent(data[d]));
   return ret.join("&");
+}
+
+function chaineToDate(madate) {
+  return new Date(
+    Number(madate.substring(0, 4)),
+    Number(madate.substring(4, 6)) - 1,
+    Number(madate.substring(6))
+  );
+}
+
+function isDateValid(value) {
+  try {
+    const str = value.toString();
+
+    // Must be exactly 8 digits
+    if (!/^\d{8}$/.test(str)) return false;
+
+    const year = parseInt(str.substring(0, 4), 10);
+    const month = parseInt(str.substring(4, 6), 10);
+    const day = parseInt(str.substring(6, 8), 10);
+
+    // Basic checks
+    if (month < 1 || month > 12) return false;
+    if (day < 1 || day > 31) return false;
+
+    // Construct date object
+    const date = new Date(year, month - 1, day);
+
+    // Validate by checking that components match
+    return (
+      date.getFullYear() === year &&
+      date.getMonth() === month - 1 &&
+      date.getDate() === day
+    );
+  } catch {
+    return false;
+  }
 }
