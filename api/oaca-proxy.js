@@ -23,7 +23,7 @@ export default async function handler(req, res) {
       frmacty: date.getFullYear(),
     };
     const urlApi = encodeQuery(queryParam);
-
+    console.log(`${aeroport.url}?${urlApi}`);
     const targetUrl = `${aeroport.url}?${urlApi}`;
     // Disable TLS validation ONLY inside Vercel
     const agent = new https.Agent({
