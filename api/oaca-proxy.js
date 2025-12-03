@@ -1,16 +1,26 @@
-// import https from "https";
-// import fetch from "node-fetch";
-
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Only POST method is allowed" });
   }
   try {
+    const autorisation = req.headers.get("functionKey");
+    if (autorisation !== process.env.FUNCTION_KEY) {
+      return responseHandler(
+        "Authentication Failed. Access to this resource requires valid credentials.",
+        401
+      );
+    }
+
     // Read POST JSON body
     const { typeTrafic, airport, date } = req.body ?? {};
     if (!typeTrafic || !airport || !date) {
       return res.status(400).json({
         error: "Missing required fields: typeTrafic, airport, date",
+      });
+    }
+    if (typeTrafic != "Arrival" && typeTrafic != "Departure") {
+      return res.status(400).json({
+        error: "Type traffic must be Arrival or Departure",
       });
     }
     if (!isDateValid(date)) {
@@ -32,7 +42,6 @@ export default async function handler(req, res) {
     };
     const urlApi = encodeQuery(queryParam);
     const airportUrl = "https://www.oaca.nat.tn/vols/api/flight/filter";
-    console.log(`${airportUrl}?${urlApi}`);
     const targetUrl = `${airportUrl}?${urlApi}`;
     // Disable TLS validation ONLY inside Vercel
     // const agent = new https.Agent({
@@ -41,7 +50,6 @@ export default async function handler(req, res) {
     // const response = await fetch(targetUrl, { agent });
     const response = await fetch(targetUrl);
     const body = await response.json();
-    console.log(body);
     const apiResponse = body.map((item) => ({
       type: typeTrafic,
       formCodeAirport: typeTrafic === "Departure" ? "" : "",
