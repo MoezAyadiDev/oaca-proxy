@@ -23,15 +23,16 @@ export default async function handler(req, res) {
       frmacty: date.getFullYear(),
     };
     const urlApi = encodeQuery(queryParam);
-    console.log(`${aeroport.url}?${urlApi}`);
-    const targetUrl = `${aeroport.url}?${urlApi}`;
+    const airportUrl = "https://www.oaca.nat.tn/vols/api/flight/filter";
+    console.log(`${airportUrl}?${urlApi}`);
+    const targetUrl = `${airportUrl}?${urlApi}`;
     // Disable TLS validation ONLY inside Vercel
     const agent = new https.Agent({
       rejectUnauthorized: false,
     });
     const response = await fetch(targetUrl, { agent });
     const body = await response.json();
-
+    console.log(body);
     const apiResponse = body.map((item) => ({
       type: typeTrafic,
       formCodeAirport: typeTrafic === "Departure" ? "" : "",
@@ -45,7 +46,7 @@ export default async function handler(req, res) {
 
     res.setHeader("Content-Type", "application/json");
     res.status(200).send(apiResponse);
-  } catch (er) {
+  } catch (err) {
     res.status(500).json({ error: err.message });
   }
 }
