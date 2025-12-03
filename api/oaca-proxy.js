@@ -3,7 +3,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Only POST method is allowed" });
   }
   try {
-    const autorisation = req.headers.get("functionKey");
+    const autorisation = req.header("functionKey");
     if (autorisation !== process.env.FUNCTION_KEY) {
       return responseHandler(
         "Authentication Failed. Access to this resource requires valid credentials.",
