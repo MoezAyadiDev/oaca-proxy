@@ -1,4 +1,5 @@
-import https from "https";
+// import https from "https";
+import fetch from "node-fetch";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -17,6 +18,7 @@ export default async function handler(req, res) {
         error: "the date must be format YYYYMMDD",
       });
     }
+    process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";
     const maDate = chaineToDate(date.toString());
     const queryParam = {
       frmmvtCod: typeTrafic === "Arrival" ? "A" : "D",
@@ -33,10 +35,11 @@ export default async function handler(req, res) {
     console.log(`${airportUrl}?${urlApi}`);
     const targetUrl = `${airportUrl}?${urlApi}`;
     // Disable TLS validation ONLY inside Vercel
-    const agent = new https.Agent({
-      rejectUnauthorized: false,
-    });
-    const response = await fetch(targetUrl, { agent });
+    // const agent = new https.Agent({
+    //   rejectUnauthorized: false,
+    // });
+    // const response = await fetch(targetUrl, { agent });
+    const response = await fetch(targetUrl);
     const body = await response.json();
     console.log(body);
     const apiResponse = body.map((item) => ({
