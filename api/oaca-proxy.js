@@ -7,9 +7,9 @@ export default async function handler(req, res) {
   try {
     // Read POST JSON body
     const { typeTrafic, airport, date } = req.body ?? {};
-    if (!typeTrafic || !codeAirport || !date) {
+    if (!typeTrafic || !airport || !date) {
       return res.status(400).json({
-        error: "Missing required fields: typeTrafic, codeAirport, date",
+        error: "Missing required fields: typeTrafic, airport, date",
       });
     }
     const queryParam = {
