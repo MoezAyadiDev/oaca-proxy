@@ -58,7 +58,7 @@ export default async function handler(req, res) {
       toCodeAirport: typeTrafic === "Arrival" ? "" : "",
       toAirport: typeTrafic === "Arrival" ? airport : item.direction,
       heure: item.heure,
-      compagnie: item.compagnie,
+      airline: item.compagnie,
       flightNum: item.numVol,
     }));
 
